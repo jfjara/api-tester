@@ -4,7 +4,7 @@ public class CommunicationException extends Throwable {
 
 	private static final long serialVersionUID = 5127417136432516273L;
 	
-	private Exception exception = null;
+	private final Exception exception;
 
 	public CommunicationException(Exception exception) {
 		this.exception = exception;

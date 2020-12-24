@@ -13,9 +13,33 @@ public class GetGroupParameters {
         this.parameterMap = parameterMap;
     }
 
-    public String getUrl() throws NotUrlInParametersException, UnsupportedEncodingException {
+    public String getUrlWithPathVariables() throws NotUrlInParametersException, UnsupportedEncodingException {
         if (parameterMap.containsKey("url")) {
-            return java.net.URLDecoder.decode(parameterMap.get("url")[0], StandardCharsets.UTF_8.name());
+            StringBuilder sb = new StringBuilder("http://");
+            String url = java.net.URLDecoder.decode(parameterMap.get("url")[0], StandardCharsets.UTF_8.name());
+            sb.append(url);
+            for (Map.Entry<String, Object> entry : getParameters().entrySet()) {
+                sb.append(entry.getValue().toString()).append("/");
+            }
+            return sb.toString();
+        }
+        throw new NotUrlInParametersException();
+    }
+
+    public String getUrlWithParams() throws NotUrlInParametersException, UnsupportedEncodingException {
+        if (parameterMap.containsKey("url")) {
+            StringBuilder sb = new StringBuilder("http://");
+            String url = java.net.URLDecoder.decode(parameterMap.get("url")[0], StandardCharsets.UTF_8.name());
+            sb.append(url);
+            int index = 0;
+            for (Map.Entry<String, Object> entry : getParameters().entrySet()) {
+                if (index > 0) {
+                    sb.append("&");
+                }
+                sb.append(entry.getKey()).append("=").append(entry.getValue().toString());
+                index++;
+            }
+            return sb.toString();
         }
         throw new NotUrlInParametersException();
     }
@@ -27,7 +51,7 @@ public class GetGroupParameters {
         throw new NotTotalRquestInParametersException();
     }
 
-    public Map<String, Object> getParameters() {
+    private Map<String, Object> getParameters() {
         Map<String, Object> result = new HashMap<>();
         for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
             if (!"url".equals(entry.getKey()) && !"requests".equals(entry.getKey())) {
@@ -36,6 +60,5 @@ public class GetGroupParameters {
         }
         return result;
     }
-
 
 }
